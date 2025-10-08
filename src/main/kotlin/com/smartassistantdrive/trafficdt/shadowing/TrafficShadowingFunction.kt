@@ -13,16 +13,18 @@ import it.wldt.core.state.DigitalTwinStateProperty
 import java.util.Optional
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneRequest
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
+import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
 import org.example.com.smartassistantdrive.trafficdt.domainLayer.Car
 import org.example.com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
 import org.example.com.smartassistantdrive.trafficdt.domainLayer.CarVirtualPosition
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CarsMqttDigitalAdapter
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter.Companion.CHANGE_LANE_DIGITAL_ACTION
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
+import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_SHUTDOWN
+import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_STARTED
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.SECURITY_DISTANCE
 import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions
 import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.calculateDistance
@@ -31,7 +33,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 
-class TrafficShadowingFunction(id: String?, val numLanes: Int) : AbstractShadowing(id) {
+class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : AbstractShadowing(id) {
 
 	private val LOGGER_NAME = "TrafficShadowingFunction"
 	private val logger = LoggerFactory.getLogger(LOGGER_NAME)
@@ -60,28 +62,44 @@ class TrafficShadowingFunction(id: String?, val numLanes: Int) : AbstractShadowi
 
 	}
 
-	fun filterCar(id: Int) = cars[id]
-
 	override fun onStart() {
 
 	}
 
 	override fun onStop() {
-
+		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+			DigitalTwinStateEventNotification<TrafficDtInfo>(DIGITALTWIN_SHUTDOWN, trafficDtInfo, UtilsFunctions.getCurrentTimestamp())
+		)
 	}
 
 	override fun onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap: MutableMap<String, PhysicalAssetDescription>?) {
 		val pad = PhysicalAssetDescription()
-		pad.properties.add(PhysicalAssetProperty("numLanes", numLanes))
+		pad.properties.add(PhysicalAssetProperty("numLanes", trafficDtInfo.numLanes))
 		pad.events.add(PhysicalAssetEvent(CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT, "text/plain"))
+		pad.events.add(PhysicalAssetEvent(CHANGE_LANE_DIGITAL_ACTION, "text/plain"))
 		adaptersPhysicalAssetDescriptionMap!!["immutableProperties"] = pad
 		super.onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap)
 
 		// initialize the lanes arrays
-		for(i in 0..<numLanes) {
+		for(i in 0..<trafficDtInfo.numLanes) {
 			lanes.add(ArrayList())
 		}
 //		executorService.scheduleAtFixedRate(task, 0,  1, TimeUnit.SECONDS)
+
+		// TODO remove this test code
+		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+			DigitalTwinStateEventNotification<TrafficDtInfo>(DIGITALTWIN_STARTED, trafficDtInfo, UtilsFunctions.getCurrentTimestamp())
+		)
+//		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+//			DigitalTwinStateEventNotification<ChangeLaneAction>(CHANGE_LANE_DIGITAL_ACTION, ChangeLaneAction("", 0, true), UtilsFunctions.getCurrentTimestamp())
+//		)
+//		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+//				DigitalTwinStateEventNotification(
+//					CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
+//					DistanceFromNext("uanama", "uanamaNext", 58.0, 0.0),
+//					getCurrentTimestamp()
+//				)
+//			)
 	}
 
 	override fun onDigitalTwinUnBound(p0: MutableMap<String, PhysicalAssetDescription>?, p1: String?) {
@@ -200,7 +218,7 @@ class TrafficShadowingFunction(id: String?, val numLanes: Int) : AbstractShadowi
 				this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
 					DigitalTwinStateEventNotification(
 						CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
-						DistanceFromNext(car1.id, car2.id, distance.toDouble()),
+						DistanceFromNext(car1.id, car2.id, distance.toDouble(), car2.speed.toDouble()),
 						getCurrentTimestamp()
 					)
 				)

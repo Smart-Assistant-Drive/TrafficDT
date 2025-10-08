@@ -10,7 +10,7 @@ import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions
 import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.stringToJsonObjectGson
 
 class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String) {
-
+	// TODO aggiungere proprietà iniziali
 	val builder = MqttPhysicalAdapterConfiguration.builder(host, port)
 	val baseTopic = "trafficdt-physical-$idDT"
 
@@ -25,8 +25,11 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String) {
 		val POSITION_BY = "positionBY"
 		val ROAD_ID = "roadId"
 		val SECURITY_DISTANCE = "securityDistance"
+		val DIRECTION = "direction"
 
 		/* EVENTS */
+		val DIGITALTWIN_STARTED = "digitalTwinStarted"
+		val DIGITALTWIN_SHUTDOWN = "digitalTwinShutdown"
 		val CHANGE_LANE_REQUEST = "changeLaneRequest"
 		val FIRST_CAR_RESTART = "firstCarRestart"
 		val STOP_REQUEST_FOR_SEMAPHORE = "stopRequestForSemaphore"
@@ -58,6 +61,7 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String) {
 			it.toDouble()
 		}
 		builder.addPhysicalAssetPropertyAndTopic(ROAD_ID, "", "$baseTopic/$ROAD_ID") { it }
+		builder.addPhysicalAssetPropertyAndTopic(DIRECTION, 0, "$baseTopic/$DIRECTION") { it }
 
 		/* EVENTS */
 		builder.addPhysicalAssetEventAndTopic(CHANGE_LANE_REQUEST, "text/plain", "$baseTopic/$CHANGE_LANE_REQUEST") {
@@ -106,6 +110,10 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String) {
 			// Id car needed
 			it
 		}
+
+		builder.addPhysicalAssetEventAndTopic(DIGITALTWIN_STARTED, "text/plain", "$baseTopic/$DIGITALTWIN_STARTED") { it }
+
+		builder.addPhysicalAssetEventAndTopic(DIGITALTWIN_SHUTDOWN, "text/plain", "$baseTopic/$DIGITALTWIN_SHUTDOWN") { it }
 
 		/* ACTIONS */
 		builder.addPhysicalAssetActionAndTopic<ChangeLaneAction>(CHANGE_LANE_ACTION, "car.changeLane", "text/plain", "$baseTopic/$CHANGE_LANE_ACTION") {
