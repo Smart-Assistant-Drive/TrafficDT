@@ -1,5 +1,6 @@
 package org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.webService
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -35,8 +36,21 @@ fun Application.configureRouting() {
 		})
 	}
 	routing {
-		get("/hello") {
-			call.respond(TrafficRouting.adapterSingleton.filter(2))
+		get("hello") {
+			call.respond("Hello world!")
+		}
+		get("/getByRoadId") {
+			val roadId = call.request.queryParameters["roadId"].orEmpty()
+			val direction = call.request.queryParameters["direction"].orEmpty()
+			if(roadId.isEmpty() || direction.isEmpty()) {
+				call.respond(HttpStatusCode.BadRequest, "L'ID della risorsa deve essere un numero intero.")
+			}
+			val result = TrafficRouting.adapterSingleton.filter(roadId, direction.toInt())
+			if(result == null) {
+				call.respond(HttpStatusCode.NotFound, "Risorsa con roadId pari a $roadId non trovata.")
+			} else {
+				call.respond(result)
+			}
 		}
 	}
 }

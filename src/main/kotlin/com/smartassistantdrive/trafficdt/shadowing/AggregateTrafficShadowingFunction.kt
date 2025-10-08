@@ -1,0 +1,91 @@
+package org.example.com.smartassistantdrive.trafficdt.shadowing
+
+import it.wldt.adapter.digital.event.DigitalActionWldtEvent
+import it.wldt.adapter.physical.PhysicalAssetDescription
+import it.wldt.adapter.physical.event.PhysicalAssetEventWldtEvent
+import it.wldt.adapter.physical.event.PhysicalAssetPropertyWldtEvent
+import it.wldt.adapter.physical.event.PhysicalAssetRelationshipInstanceCreatedWldtEvent
+import it.wldt.adapter.physical.event.PhysicalAssetRelationshipInstanceDeletedWldtEvent
+import kotlin.jvm.optionals.getOrNull
+import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+class AggregateTrafficShadowingFunction(id: String?) : AbstractShadowing(id) {
+
+	private val LOGGER_NAME = "AggregateTrafficShadowingFunction"
+	private val logger = LoggerFactory.getLogger(LOGGER_NAME)
+	val trafficDigitalTwinsActive: ArrayList<TrafficDtInfo> = ArrayList()
+
+	fun getTrafficDigitalTwinByRoadId(roadId: String, direction: Int): TrafficDtInfo? {
+		logger.info("CURRENT DTs: " + trafficDigitalTwinsActive.toString())
+		return trafficDigitalTwinsActive.stream().filter {
+			it.roadId == roadId && it.direction == direction
+		}.findFirst().getOrNull()
+	}
+
+	override fun getLogger(): Logger = logger
+
+	override fun onCreate() {
+		
+	}
+
+	override fun onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap: MutableMap<String, PhysicalAssetDescription>?) {
+		super.onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap)
+	}
+
+	override fun onStart() {
+		
+	}
+
+	override fun onStop() {
+		
+	}
+
+	override fun onDigitalTwinUnBound(p0: MutableMap<String, PhysicalAssetDescription>?, p1: String?) {
+		
+	}
+
+	override fun onPhysicalAdapterBidingUpdate(p0: String?, p1: PhysicalAssetDescription?) {
+		
+	}
+
+	override fun onPhysicalAssetPropertyVariation(p0: PhysicalAssetPropertyWldtEvent<*>?) {
+		
+	}
+
+	override fun onPhysicalAssetEventNotification(physicalAssetEventWldtEvent: PhysicalAssetEventWldtEvent<*>?) {
+		if (physicalAssetEventWldtEvent != null) {
+			val eventKey = physicalAssetEventWldtEvent.physicalEventKey
+			logger.info("Event notified... $eventKey")
+			when (eventKey) {
+				MqttAggregatePhysicalAdapter.TRAFFIC_DT_ACTIVATED -> {
+					val dtInfo = physicalAssetEventWldtEvent.body as TrafficDtInfo
+					this.trafficDigitalTwinsActive.add(dtInfo)
+					logger.info("Activated new dt... ${trafficDigitalTwinsActive.toString()}")
+				}
+				MqttAggregatePhysicalAdapter.TRAFFIC_DT_SHUTDOWN -> {
+					val dtInfo = physicalAssetEventWldtEvent.body as TrafficDtInfo
+					this.trafficDigitalTwinsActive.removeIf {
+						it.roadId == dtInfo.roadId && it.direction == dtInfo.direction
+					}
+				}
+			}
+
+		}
+	}
+
+	override fun onPhysicalAssetRelationshipEstablished(p0: PhysicalAssetRelationshipInstanceCreatedWldtEvent<*>?) {
+		
+	}
+
+	override fun onPhysicalAssetRelationshipDeleted(p0: PhysicalAssetRelationshipInstanceDeletedWldtEvent<*>?) {
+		
+	}
+
+	override fun onDigitalActionEvent(p0: DigitalActionWldtEvent<*>?) {
+		
+	}
+
+}
