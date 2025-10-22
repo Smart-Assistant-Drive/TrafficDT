@@ -9,6 +9,8 @@ import org.slf4j.Logger
 
 abstract class AbstractShadowing(id: String?) : ShadowingFunction(id) {
 
+	private val internalPad = PhysicalAssetDescription()
+
 	override fun onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap: MutableMap<String, PhysicalAssetDescription>?) {
 		try{
 			// Start DT State Change Transaction

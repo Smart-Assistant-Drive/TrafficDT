@@ -6,11 +6,11 @@ import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAct
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneRequest
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.RestartCarAction
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.StopCarAction
+import org.example.com.smartassistantdrive.trafficdt.dt.property.TrafficInitialProperties
 import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions
 import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.stringToJsonObjectGson
 
-class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String) {
-	// TODO aggiungere proprietà iniziali
+class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficInitialProperties: TrafficInitialProperties) {
 	val builder = MqttPhysicalAdapterConfiguration.builder(host, port)
 	val baseTopic = "trafficdt-physical-$idDT"
 
@@ -60,8 +60,8 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String) {
 		builder.addPhysicalAssetPropertyAndTopic(POSITION_BY, 0, "$baseTopic/$POSITION_BY") {
 			it.toDouble()
 		}
-		builder.addPhysicalAssetPropertyAndTopic(ROAD_ID, "", "$baseTopic/$ROAD_ID") { it }
-		builder.addPhysicalAssetPropertyAndTopic(DIRECTION, 0, "$baseTopic/$DIRECTION") { it }
+		builder.addPhysicalAssetPropertyAndTopic(ROAD_ID, trafficInitialProperties.roadId, "$baseTopic/$ROAD_ID") { it }
+		builder.addPhysicalAssetPropertyAndTopic(DIRECTION, trafficInitialProperties.direction, "$baseTopic/$DIRECTION") { it }
 
 		/* EVENTS */
 		builder.addPhysicalAssetEventAndTopic(CHANGE_LANE_REQUEST, "text/plain", "$baseTopic/$CHANGE_LANE_REQUEST") {

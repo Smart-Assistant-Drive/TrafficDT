@@ -4,6 +4,7 @@ import it.wldt.adapter.http.digital.adapter.HttpDigitalAdapter
 import it.wldt.adapter.http.digital.adapter.HttpDigitalAdapterConfiguration
 import it.wldt.core.engine.DigitalTwin
 import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import org.example.com.smartassistantdrive.trafficdt.dt.property.TrafficInitialProperties
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CarsMqttDigitalAdapter
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CustomHttpDigitalAdapter
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter
@@ -17,7 +18,6 @@ import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.C
 import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.httpPort
 
 class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numLanes: Int) {
-// TODO set roadId and direction
 	private var digitalTwin: DigitalTwin
 
 	init {
@@ -29,7 +29,7 @@ class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numL
 		val shadowing = TrafficShadowingFunction("traffic-shadowing-$idDT", TrafficDtInfo("${host.getEnvValue()}:$httpDTPort", roadId, direction, numLanes))
 		digitalTwin = DigitalTwin(id, shadowing)
 
-		val mqttPhysicalAdapter = MqttTrafficPhysicalAdapter(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), idDT).build("test-mqtt-pa-$idDT")
+		val mqttPhysicalAdapter = MqttTrafficPhysicalAdapter(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), idDT, TrafficInitialProperties(roadId, direction)).build("test-mqtt-pa-$idDT")
 
 		val httpDigitalAdapterConfiguration = HttpDigitalAdapterConfiguration("my-http-adapter-$idDT", host.getEnvValue(), httpDTPort)
 		val httpDigitalAdapter = HttpDigitalAdapter(httpDigitalAdapterConfiguration, digitalTwin)

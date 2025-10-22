@@ -46,15 +46,8 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 	val cars: ArrayList<Car> = ArrayList() /** for testing only **/
 
 	var task: Runnable = Runnable {
-			updateCarsDistances()
-//			this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-//				DigitalTwinStateEventNotification(
-//					CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
-//					DistanceFromNext("uanama", "uanamaNext", 58.0),
-//					getCurrentTimestamp()
-//				)
-//			)
-		}
+		updateCarsDistances()
+	}
 
 	override fun getLogger(): Logger = logger
 
@@ -90,16 +83,6 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
 			DigitalTwinStateEventNotification<TrafficDtInfo>(DIGITALTWIN_STARTED, trafficDtInfo, UtilsFunctions.getCurrentTimestamp())
 		)
-//		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-//			DigitalTwinStateEventNotification<ChangeLaneAction>(CHANGE_LANE_DIGITAL_ACTION, ChangeLaneAction("", 0, true), UtilsFunctions.getCurrentTimestamp())
-//		)
-//		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-//				DigitalTwinStateEventNotification(
-//					CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
-//					DistanceFromNext("uanama", "uanamaNext", 58.0, 0.0),
-//					getCurrentTimestamp()
-//				)
-//			)
 	}
 
 	override fun onDigitalTwinUnBound(p0: MutableMap<String, PhysicalAssetDescription>?, p1: String?) {
@@ -174,23 +157,40 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 				MqttTrafficPhysicalAdapter.CAR_UPDATE -> {
 					// update the car state
 					val carUpdate: CarUpdate = physicalAssetEventWldtEvent.body as CarUpdate
-					if(cars.stream().filter { it.id == carUpdate.idCar }.count() > 0) {
+					if(this.accessMap.containsKey(carUpdate.idCar)) {
 						// update the car
 						updateCar(carUpdate)
 					}
 				}
 
 				MqttTrafficPhysicalAdapter.CAR_ENTERED_ON_ROAD -> {
-					// manage car added on road
+					// manage car added on road using lanes
 					val carUpdate: CarUpdate = physicalAssetEventWldtEvent.body as CarUpdate
-					// TODO
+
+					if(!this.accessMap.containsKey(carUpdate.idCar)) {
+						// update the car
+						this.accessMap[carUpdate.idCar] = CarVirtualPosition(carUpdate.indexP, carUpdate.indexLane)
+						this.lanes[carUpdate.indexLane].add(
+							Car(
+								carUpdate.idCar,
+								carUpdate.state,
+								"",
+								carUpdate.currentSpeed,
+								carUpdate.position,
+								carUpdate.indexP,
+								carUpdate.indexLane,
+								carUpdate.dPoint
+							)
+						)
+					}
 				}
 
 				MqttTrafficPhysicalAdapter.CAR_EXITED_ON_ROAD -> {
-					// manage first car restart (stopped on a semaphore)
 					val carId: String = physicalAssetEventWldtEvent.body as String
-					cars.removeIf {
-						it.id == carId
+					if(this.accessMap.containsKey(carId)) {
+						val carVirtualPosition: CarVirtualPosition = this.accessMap[carId]!!
+						// TODO SBAGLIATO in indexLane e indexPosition potrei avere più auto, dovrebbe essere una matrice tridimensionale (va cambiato tutto)
+						this.lanes[carVirtualPosition.indexLane].removeAt(carVirtualPosition.indexPosition)
 					}
 				}
 			}
