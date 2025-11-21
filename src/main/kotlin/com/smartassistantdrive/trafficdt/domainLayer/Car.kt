@@ -11,5 +11,5 @@ data class Car(
 	val position: Pair<Float, Float>,
 	val indexP: Int,
 	val indexLane: Int,
-	val dPoint: Float
+	val dPoint: Pair<Float, Float>
 )

@@ -7,5 +7,5 @@ data class CarUpdate(
 	val indexLane: Int,
 	val position: Pair<Float, Float>,
 	val indexP: Int,
-	val dPoint: Float
+	val dPoint: Pair<Float, Float>
 )

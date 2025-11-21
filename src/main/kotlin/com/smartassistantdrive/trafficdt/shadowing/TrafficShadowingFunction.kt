@@ -38,7 +38,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 	private val LOGGER_NAME = "TrafficShadowingFunction"
 	private val logger = LoggerFactory.getLogger(LOGGER_NAME)
 
-	val lanes: ArrayList<ArrayList<Car>> = ArrayList()
+	val lanes: ArrayList<ArrayList<ArrayList<Car>>> = ArrayList()
 	val accessMap: HashMap<String, CarVirtualPosition> = HashMap<String, CarVirtualPosition>()
 
 	var executorService: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
@@ -46,8 +46,8 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 	val cars: ArrayList<Car> = ArrayList() /** for testing only **/
 
 	var task: Runnable = Runnable {
-		updateCarsDistances()
-	}
+			updateCarsDistances()
+		}
 
 	override fun getLogger(): Logger = logger
 
@@ -74,8 +74,11 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 		super.onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap)
 
 		// initialize the lanes arrays
-		for(i in 0..<trafficDtInfo.numLanes) {
+		for(c in 0..trafficDtInfo.numBlocks) {
 			lanes.add(ArrayList())
+			for(i in 0..<trafficDtInfo.numLanes) {
+				lanes[c].add(ArrayList())
+			}
 		}
 //		executorService.scheduleAtFixedRate(task, 0,  1, TimeUnit.SECONDS)
 
@@ -125,7 +128,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 					val car = getCar(request.idCar)
 					if(car.isPresent) {
 						val position = car.get().position
-						val carsList = lanes[request.destinationLane]
+						val carsList = lanes[car.get().indexP][request.destinationLane]
 						carsList.forEach {
 							val position1 = it.position
 							val distance = UtilsFunctions.calculateDistance(position1, position)
@@ -169,8 +172,9 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 
 					if(!this.accessMap.containsKey(carUpdate.idCar)) {
 						// update the car
-						this.accessMap[carUpdate.idCar] = CarVirtualPosition(carUpdate.indexP, carUpdate.indexLane)
-						this.lanes[carUpdate.indexLane].add(
+						val indexPositionInLane = this.lanes[carUpdate.indexP][carUpdate.indexLane].size
+						this.accessMap[carUpdate.idCar] = CarVirtualPosition(indexPositionInLane, carUpdate.indexLane, carUpdate.indexP)
+						this.lanes[carUpdate.indexP][carUpdate.indexLane].add(
 							Car(
 								carUpdate.idCar,
 								carUpdate.state,
@@ -189,8 +193,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 					val carId: String = physicalAssetEventWldtEvent.body as String
 					if(this.accessMap.containsKey(carId)) {
 						val carVirtualPosition: CarVirtualPosition = this.accessMap[carId]!!
-						// TODO SBAGLIATO in indexLane e indexPosition potrei avere più auto, dovrebbe essere una matrice tridimensionale (va cambiato tutto)
-						this.lanes[carVirtualPosition.indexLane].removeAt(carVirtualPosition.indexPosition)
+						this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane].removeAt(carVirtualPosition.indexPosition)
 					}
 				}
 			}
@@ -210,18 +213,20 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 	}
 
 	fun updateCarsDistances() {
-		this.lanes.forEach {
-			for(i in 0..< (it.size - 1)) {
-				val car1 = it[i]
-				val car2 = it[i + 1]
-				val distance = calculateDistance(car1.position, car2.position)
-				this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-					DigitalTwinStateEventNotification(
-						CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
-						DistanceFromNext(car1.id, car2.id, distance.toDouble(), car2.speed.toDouble()),
-						getCurrentTimestamp()
+		this.lanes.forEach { blocks ->
+			blocks.forEach {
+				for (i in 0..<(it.size - 1)) {
+					val car1 = it[i]
+					val car2 = it[i + 1]
+					val distance = calculateDistance(car1.position, car2.position)
+					this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+						DigitalTwinStateEventNotification(
+							CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
+							DistanceFromNext(car1.id, car2.id, distance.toDouble(), car2.speed.toDouble()),
+							getCurrentTimestamp()
+						)
 					)
-				)
+				}
 			}
 		}
 	}
@@ -229,7 +234,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 	fun getCar(carId: String): Optional<Car> {
 		val virtualPosition = this.accessMap[carId]
 		if(virtualPosition != null)
-			return Optional.of(this.lanes[virtualPosition.indexLane][virtualPosition.indexPosition])
+			return Optional.of(this.lanes[virtualPosition.indexBlock][virtualPosition.indexLane][virtualPosition.indexPosition])
 		else
 			return Optional.empty()
 	}
@@ -245,16 +250,23 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 			carUpdate.indexP,
 			carUpdate.dPoint
 		)
-		this.lanes[carUpdate.indexLane].add(
+
+		val carVirtualPosition = this.accessMap[carUpdate.idCar]
+		if (carVirtualPosition != null) {
+			this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane].removeAt(carVirtualPosition.indexPosition)
+		}
+
+		this.lanes[carUpdate.indexP][carUpdate.indexLane].add(
 			car
 		)
+
 		val tempArray: ArrayList<Car> = ArrayList()
-		this.lanes[carUpdate.indexLane].sortedBy { it.indexP }.toCollection(tempArray)
-		this.lanes.removeAt(carUpdate.indexLane)
-		this.lanes[carUpdate.indexLane] = tempArray
+		this.lanes[carUpdate.indexP][carUpdate.indexLane].sortedBy { UtilsFunctions.calculateDistance(it.dPoint, it.position) }.toCollection(tempArray)
 
-		val indexCar = this.lanes[carUpdate.indexLane].indexOf(car)
+		this.lanes[carUpdate.indexP][carUpdate.indexLane] = tempArray
 
-		this.accessMap[carUpdate.idCar] = CarVirtualPosition(indexCar, carUpdate.indexLane)
+		val indexCar = this.lanes[carUpdate.indexP][carUpdate.indexLane].indexOf(car)
+
+		this.accessMap[carUpdate.idCar] = CarVirtualPosition(indexCar, carUpdate.indexLane, carUpdate.indexP)
 	}
 }

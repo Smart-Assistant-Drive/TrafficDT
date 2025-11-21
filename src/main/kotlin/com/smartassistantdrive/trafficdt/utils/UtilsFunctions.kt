@@ -29,7 +29,8 @@ class UtilsFunctions {
 			val positionX = json["positionX"].asFloat
 			val positionY = json["positionY"].asFloat
 			val indexP = json["lane"].asInt
-			val dPoint = json["dPoint"].asFloat
+			val dPointX = json["dPointX"].asFloat
+			val dPointY = json["dPointY"].asFloat
 			return CarUpdate(
 				idCar,
 				speed,
@@ -37,7 +38,7 @@ class UtilsFunctions {
 				lane,
 				Pair(positionX, positionY),
 				indexP,
-				dPoint
+				Pair(dPointX, dPointY)
 			)
 		}
 
@@ -64,7 +65,8 @@ class UtilsFunctions {
 				json["link"].asString,
 				json["roadId"].asString,
 				json["direction"].asInt,
-				json["numLanes"].asInt
+				json["numLanes"].asInt,
+				json["numBlocks"].asInt
 			)
 		}
 	}
