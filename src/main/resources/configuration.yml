@@ -1,0 +1,13 @@
+segments:
+  - roadId: Via Centrale
+    direction: 1
+    numLanes: 4
+    numBlocks: 25
+  - roadId: Autostrada A10
+    direction: -1
+    numLanes: 6
+    numBlocks: 12
+  - roadId: Viale Est
+    direction: 1
+    numLanes: 2
+    numBlocks: 8

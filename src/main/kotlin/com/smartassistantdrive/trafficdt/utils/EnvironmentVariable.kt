@@ -12,7 +12,7 @@ class EnvironmentVariable(key: String, private val defaultValue: String) {
 
 		const val BASE_HOST = "BASE_HOST"
 
-		val httpPort = EnvironmentVariable(HTTP_PORT, "8081")
+		val httpPort = EnvironmentVariable(HTTP_PORT, "8082")
 	}
 
 	private val value: String? = System.getenv(key)

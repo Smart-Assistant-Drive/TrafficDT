@@ -13,6 +13,7 @@ import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digi
 import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter
 import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions
 
+/*TODO refactor shadowing using this class*/
 class TrafficManagerUseCase(val trafficDtInfo: TrafficDtInfo) {
 	val lanes: ArrayList<ArrayList<ArrayList<Car>>> = ArrayList()
 	val accessMap: HashMap<String, CarVirtualPosition> = HashMap<String, CarVirtualPosition>()
@@ -40,25 +41,6 @@ class TrafficManagerUseCase(val trafficDtInfo: TrafficDtInfo) {
 			}
 		}
 		return canChange
-	}
-
-	fun updateCarsDistances() {
-		this.lanes.forEach { blocks ->
-			blocks.forEach {
-				for (i in 0..<(it.size - 1)) {
-					val car1 = it[i]
-					val car2 = it[i + 1]
-					val distance = UtilsFunctions.calculateDistance(car1.position, car2.position)
-					this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-						DigitalTwinStateEventNotification(
-							CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
-							DistanceFromNext(car1.id, car2.id, distance.toDouble(), car2.speed.toDouble()),
-							UtilsFunctions.getCurrentTimestamp()
-						)
-					)
-				}
-			}
-		}
 	}
 
 	fun getCar(carId: String): Optional<Car> {

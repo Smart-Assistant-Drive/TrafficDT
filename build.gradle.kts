@@ -11,11 +11,17 @@ repositories {
     mavenCentral()
 }
 
+application {
+    mainClass.set("com.smartassistantdrive.trafficdt.Main")
+}
+
 dependencies {
     implementation("io.github.wldt:wldt-core:0.4.0")
     implementation ("io.github.wldt:http-digital-adapter:0.2")
     implementation("io.github.wldt:mqtt-digital-adapter:0.1.2")
     implementation("io.github.wldt:mqtt-physical-adapter:0.1.2")
+    // SnakeYAML YAML parser
+    implementation("org.yaml:snakeyaml:2.0")
 
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
@@ -44,5 +50,5 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(19)
 }
