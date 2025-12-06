@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.shadowing
+package com.smartassistantdrive.trafficdt.shadowing
 
 import it.wldt.adapter.digital.event.DigitalActionWldtEvent
 import it.wldt.adapter.physical.PhysicalAssetDescription
@@ -6,13 +6,16 @@ import it.wldt.adapter.physical.event.PhysicalAssetEventWldtEvent
 import it.wldt.adapter.physical.event.PhysicalAssetPropertyWldtEvent
 import it.wldt.adapter.physical.event.PhysicalAssetRelationshipInstanceCreatedWldtEvent
 import it.wldt.adapter.physical.event.PhysicalAssetRelationshipInstanceDeletedWldtEvent
+import it.wldt.core.engine.DigitalTwinEngine
 import kotlin.jvm.optionals.getOrNull
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.dt.TrafficDT
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter.Companion.CREATE_TRAFFIC_DT
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class AggregateTrafficShadowingFunction(id: String?) : AbstractShadowing(id) {
+class AggregateTrafficShadowingFunction(id: String?, private val dtEngine: DigitalTwinEngine) : AbstractShadowing(id) {
 
 	private val LOGGER_NAME = "AggregateTrafficShadowingFunction"
 	private val logger = LoggerFactory.getLogger(LOGGER_NAME)
@@ -24,6 +27,10 @@ class AggregateTrafficShadowingFunction(id: String?) : AbstractShadowing(id) {
 			it.roadId == roadId && it.direction == direction
 		}.findFirst().getOrNull()
 	}
+
+    fun getAllRegisteredTrafficManagers(): List<TrafficDtInfo> {
+        return trafficDigitalTwinsActive
+    }
 
 	override fun getLogger(): Logger = logger
 
@@ -84,8 +91,30 @@ class AggregateTrafficShadowingFunction(id: String?) : AbstractShadowing(id) {
 		
 	}
 
-	override fun onDigitalActionEvent(p0: DigitalActionWldtEvent<*>?) {
-		
+	override fun onDigitalActionEvent(digitalActionWldtEvent: DigitalActionWldtEvent<*>?) {
+        try {
+            if (digitalActionWldtEvent != null) {
+                logger.info("Actions triggered... " + digitalActionWldtEvent.actionKey)
+                logger.info("Body... " + digitalActionWldtEvent.body)
+                val body = digitalActionWldtEvent.body as String
+                when (digitalActionWldtEvent.actionKey) {
+                    CREATE_TRAFFIC_DT -> {
+                        val trafficDtInfo = MqttAggregatePhysicalAdapter.getTrafficInfo(body)
+                        this.trafficDigitalTwinsActive.add(trafficDtInfo)
+                        this.createNewSemaphore(trafficDtInfo)
+                        logger.info("Created new dt... $trafficDigitalTwinsActive")
+                    }
+                }
+            } else {
+                throw NullPointerException("Digital Action Wldt Event received is null")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 	}
+
+    private fun createNewSemaphore(trafficDtInfo: TrafficDtInfo) {
+        this.dtEngine.addDigitalTwin(TrafficDT("trafficdt-${trafficDtInfo.roadId}-${trafficDtInfo.direction}", trafficDigitalTwinsActive.size - 1, trafficDtInfo.roadId, trafficDtInfo.direction, trafficDtInfo.numLanes, trafficDtInfo.numBlocks).getDigitalTwin(), true)
+    }
 
 }

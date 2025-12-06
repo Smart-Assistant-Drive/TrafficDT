@@ -1,21 +1,20 @@
-package org.example.com.smartassistantdrive.trafficdt.dt
+package com.smartassistantdrive.trafficdt.dt
 
 import it.wldt.adapter.http.digital.adapter.HttpDigitalAdapter
 import it.wldt.adapter.http.digital.adapter.HttpDigitalAdapterConfiguration
 import it.wldt.core.engine.DigitalTwin
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
-import org.example.com.smartassistantdrive.trafficdt.dt.property.TrafficInitialProperties
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CarsMqttDigitalAdapter
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CustomHttpDigitalAdapter
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
-import org.example.com.smartassistantdrive.trafficdt.shadowing.TrafficShadowingFunction
-import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable
-import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.BASE_HOST
-import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.MQTT_BROKER_HOST
-import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.MQTT_PORT
-import org.example.com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.httpPort
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.dt.property.TrafficInitialProperties
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CarsMqttDigitalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
+import com.smartassistantdrive.trafficdt.shadowing.TrafficShadowingFunction
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.BASE_HOST
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.MQTT_BROKER_HOST
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.MQTT_PORT
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.httpPort
 
 class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numLanes: Int, numBlocks: Int) {
 	private var digitalTwin: DigitalTwin

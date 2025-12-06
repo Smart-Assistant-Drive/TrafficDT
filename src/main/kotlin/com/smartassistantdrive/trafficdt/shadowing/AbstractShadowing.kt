@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.shadowing
+package com.smartassistantdrive.trafficdt.shadowing
 
 import it.wldt.adapter.physical.PhysicalAssetDescription
 import it.wldt.core.model.ShadowingFunction

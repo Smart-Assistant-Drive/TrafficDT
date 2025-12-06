@@ -1,6 +1,6 @@
 ktor:
     application:
         modules:
-            - org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.webService.TrafficRoutingKt.configureRouting
+            - com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.webService.TrafficRoutingKt.configureRouting
     deployment:
         port: "$AGGREGATE_DIGITAL_ADAPTER:8091"
