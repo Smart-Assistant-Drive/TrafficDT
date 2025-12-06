@@ -1,14 +1,13 @@
-package org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter
+package com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter
 
 import it.wldt.adapter.mqtt.digital.MqttDigitalAdapter
 import it.wldt.adapter.mqtt.digital.MqttDigitalAdapterConfiguration
 import it.wldt.adapter.mqtt.digital.topic.MqttQosLevel
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
+import com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
 
 class MqttTrafficDigitalAdapter(host: String, port: Int, idDT: String) {
 

@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter
+package com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter
 
 import it.wldt.adapter.digital.DigitalAdapter
 import it.wldt.core.state.DigitalTwinState
@@ -13,9 +13,9 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
+import com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
 
 /**
  * Class that represents a MQTT Adapter for specific traffic dt -> car communication

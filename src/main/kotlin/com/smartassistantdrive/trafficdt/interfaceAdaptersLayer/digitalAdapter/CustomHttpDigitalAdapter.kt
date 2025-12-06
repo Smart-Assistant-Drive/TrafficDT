@@ -1,18 +1,18 @@
-package org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter
+package com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter
 
 import it.wldt.adapter.digital.DigitalAdapter
 import it.wldt.core.state.DigitalTwinState
 import it.wldt.core.state.DigitalTwinStateChange
 import it.wldt.core.state.DigitalTwinStateEventNotification
 import java.util.ArrayList
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.Car
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.webService.TrafficRouting
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.webService.TrafficRouting
 
 typealias DtFilter = (String, Int) -> TrafficDtInfo?
+typealias DtGetter = () -> List<TrafficDtInfo>
 
-class CustomHttpDigitalAdapter(id: String, configuration: EndPointConfiguration, val filter: DtFilter): DigitalAdapter<EndPointConfiguration>(id, configuration)  {
+class CustomHttpDigitalAdapter(id: String, configuration: EndPointConfiguration, val filter: DtFilter, val dtGetter: DtGetter): DigitalAdapter<EndPointConfiguration>(id, configuration)  {
 
 	override fun onStateUpdate(p0: DigitalTwinState?, p1: DigitalTwinState?, p2: ArrayList<DigitalTwinStateChange>?) {
 		
@@ -23,6 +23,7 @@ class CustomHttpDigitalAdapter(id: String, configuration: EndPointConfiguration,
 	}
 
 	override fun onAdapterStart() {
+        println("SI CAPO")
 		TrafficRouting.execute(this)
 	}
 

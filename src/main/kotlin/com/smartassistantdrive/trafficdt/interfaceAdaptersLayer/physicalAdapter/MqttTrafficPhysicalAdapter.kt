@@ -1,14 +1,15 @@
-package org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter
+package com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter
 
 import it.wldt.adapter.mqtt.physical.MqttPhysicalAdapter
 import it.wldt.adapter.mqtt.physical.MqttPhysicalAdapterConfiguration
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneRequest
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.RestartCarAction
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.StopCarAction
-import org.example.com.smartassistantdrive.trafficdt.dt.property.TrafficInitialProperties
-import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions
-import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.stringToJsonObjectGson
+import com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
+import com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneRequest
+import com.smartassistantdrive.trafficdt.businessLayer.RestartCarAction
+import com.smartassistantdrive.trafficdt.businessLayer.StopCarAction
+import com.smartassistantdrive.trafficdt.dt.property.TrafficInitialProperties
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
+import com.smartassistantdrive.trafficdt.utils.UtilsFunctions
+import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.stringToJsonObjectGson
 
 class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficInitialProperties: TrafficInitialProperties) {
 	val builder = MqttPhysicalAdapterConfiguration.builder(host, port)
@@ -45,19 +46,19 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 
 	init {
 		/* PROPERTY */
-		builder.addPhysicalAssetPropertyAndTopic(POSITION_AX, 0, "$baseTopic/$POSITION_AX") {
+		builder.addPhysicalAssetPropertyAndTopic(POSITION_AX, 0.0, "$baseTopic/$POSITION_AX") {
 			it.toDouble()
 		}
 		builder.addPhysicalAssetPropertyAndTopic(SECURITY_DISTANCE, SECURITY_DISTANCE_VALUE, "$baseTopic/$SECURITY_DISTANCE") {
 			it.toDouble()
 		}
-		builder.addPhysicalAssetPropertyAndTopic(POSITION_AY, 0, "$baseTopic/$POSITION_AY") {
+		builder.addPhysicalAssetPropertyAndTopic(POSITION_AY, 0.0, "$baseTopic/$POSITION_AY") {
 			it.toDouble()
 		}
-		builder.addPhysicalAssetPropertyAndTopic(POSITION_BX, 0, "$baseTopic/$POSITION_BX") {
+		builder.addPhysicalAssetPropertyAndTopic(POSITION_BX, 0.0, "$baseTopic/$POSITION_BX") {
 			it.toDouble()
 		}
-		builder.addPhysicalAssetPropertyAndTopic(POSITION_BY, 0, "$baseTopic/$POSITION_BY") {
+		builder.addPhysicalAssetPropertyAndTopic(POSITION_BY, 0.0, "$baseTopic/$POSITION_BY") {
 			it.toDouble()
 		}
 		builder.addPhysicalAssetPropertyAndTopic(ROAD_ID, trafficInitialProperties.roadId, "$baseTopic/$ROAD_ID") { it }
@@ -88,7 +89,7 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 
 		builder.addPhysicalAssetEventAndTopic(CAR_ENTERED_ON_ROAD, "text/plain", "$baseTopic/$CAR_ENTERED_ON_ROAD") {
 			// info of car needed
-			val json = UtilsFunctions.stringToJsonObjectGson(it)
+			val json = stringToJsonObjectGson(it)
 			if(json != null) {
 				UtilsFunctions.jsonToCarUpdateModel(json)
 			} else {
@@ -98,7 +99,7 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 
 		builder.addPhysicalAssetEventAndTopic(CAR_UPDATE, "text/plain", "$baseTopic/$CAR_UPDATE") {
 			// info of car needed
-			val json = UtilsFunctions.stringToJsonObjectGson(it)
+			val json = stringToJsonObjectGson(it)
 			if(json != null) {
 				UtilsFunctions.jsonToCarUpdateModel(json)
 			} else {
@@ -117,15 +118,7 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 
 		/* ACTIONS */
 		builder.addPhysicalAssetActionAndTopic<ChangeLaneAction>(CHANGE_LANE_ACTION, "car.changeLane", "text/plain", "$baseTopic/$CHANGE_LANE_ACTION") {
-			it.toString()
-		}
-
-		builder.addPhysicalAssetActionAndTopic<StopCarAction>(STOP_CAR_ACTION, "car.stop", "text/plain", "$baseTopic/$STOP_CAR_ACTION") {
-			it.toString()
-		}
-
-		builder.addPhysicalAssetActionAndTopic<RestartCarAction>(RESTART_CAR_ACTION, "car.restart", "text/plain", "$baseTopic/$RESTART_CAR_ACTION") {
-			it.toString()
+            it.toJson().toString()
 		}
 	}
 
