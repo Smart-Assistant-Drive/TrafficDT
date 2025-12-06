@@ -1,6 +1,6 @@
-package org.example.com.smartassistantdrive.trafficdt.businessLayer
+package com.smartassistantdrive.trafficdt.businessLayer
 
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.Coordinate
+import com.smartassistantdrive.trafficdt.domainLayer.Coordinate
 
 data class StopCarAction(
 	val idCar: String,

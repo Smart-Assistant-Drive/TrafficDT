@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.utils
+package com.smartassistantdrive.trafficdt.utils
 
 class EnvironmentVariable(key: String, private val defaultValue: String) {
 
@@ -13,6 +13,8 @@ class EnvironmentVariable(key: String, private val defaultValue: String) {
 		const val BASE_HOST = "BASE_HOST"
 
 		val httpPort = EnvironmentVariable(HTTP_PORT, "8082")
+		val httpAggregatePort = EnvironmentVariable(BASE_PORT_AGGREGATE, "8079")
+		val digitalAggregatePort = EnvironmentVariable(AGGREGATE_DIGITAL_ADAPTER, "8089")
 	}
 
 	private val value: String? = System.getenv(key)

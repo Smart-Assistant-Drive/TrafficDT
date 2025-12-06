@@ -1,9 +1,9 @@
-package org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion
+package com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion
 
 import com.google.gson.JsonObject
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
+import com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
 
 fun ChangeLaneAction.toJson(): JsonObject {
 	val json = JsonObject()
@@ -28,5 +28,6 @@ fun TrafficDtInfo.toJson(): JsonObject {
 	json.addProperty("roadId", this.roadId)
 	json.addProperty("direction", this.direction)
 	json.addProperty("numLanes", this.numLanes)
+	json.addProperty("numBlocks", this.numBlocks)
 	return json
 }

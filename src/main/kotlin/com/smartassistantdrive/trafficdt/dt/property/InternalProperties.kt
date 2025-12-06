@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.dt.property
+package com.smartassistantdrive.trafficdt.dt.property
 
 import it.wldt.adapter.physical.PhysicalAssetProperty
 

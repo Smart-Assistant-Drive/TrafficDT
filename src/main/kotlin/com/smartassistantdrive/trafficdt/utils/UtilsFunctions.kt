@@ -1,13 +1,13 @@
-package org.example.com.smartassistantdrive.trafficdt.utils
+package com.smartassistantdrive.trafficdt.utils
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import kotlin.math.pow
 import kotlin.math.sqrt
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.CarState
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.domainLayer.CarState
+import com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
 
 class UtilsFunctions {
 	companion object {
@@ -28,7 +28,7 @@ class UtilsFunctions {
 			val lane = json["lane"].asInt
 			val positionX = json["positionX"].asFloat
 			val positionY = json["positionY"].asFloat
-			val indexP = json["lane"].asInt
+			val indexP = json["indexP"].asInt
 			val dPointX = json["dPointX"].asFloat
 			val dPointY = json["dPointY"].asFloat
 			return CarUpdate(

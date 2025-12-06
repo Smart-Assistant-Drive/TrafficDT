@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.businessLayer
+package com.smartassistantdrive.trafficdt.businessLayer
 
 data class ChangeLaneAction(
 	val idCar: String,

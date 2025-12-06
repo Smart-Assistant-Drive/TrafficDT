@@ -1,7 +1,7 @@
-package org.example.com.smartassistantdrive.trafficdt.dt.property
+package com.smartassistantdrive.trafficdt.dt.property
 
 import it.wldt.adapter.physical.PhysicalAssetProperty
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
 
 class TrafficInitialProperties(val roadId: String, val direction: Int): InternalProperties() {
 

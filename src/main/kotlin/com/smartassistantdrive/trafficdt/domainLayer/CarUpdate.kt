@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.domainLayer
+package com.smartassistantdrive.trafficdt.domainLayer
 
 data class CarUpdate(
 	val idCar: String,

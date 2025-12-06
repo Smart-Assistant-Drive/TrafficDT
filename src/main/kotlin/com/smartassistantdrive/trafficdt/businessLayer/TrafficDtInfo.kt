@@ -1,4 +1,4 @@
-package org.example.com.smartassistantdrive.trafficdt.businessLayer
+package com.smartassistantdrive.trafficdt.businessLayer
 
 import kotlinx.serialization.Serializable
 
