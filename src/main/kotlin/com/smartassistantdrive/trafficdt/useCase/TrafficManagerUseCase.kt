@@ -1,17 +1,11 @@
-package org.example.com.smartassistantdrive.trafficdt.useCase
+package com.smartassistantdrive.trafficdt.useCase
 
-import it.wldt.core.state.DigitalTwinStateEventNotification
 import java.util.Optional
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneAction
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.ChangeLaneRequest
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
-import org.example.com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.Car
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
-import org.example.com.smartassistantdrive.trafficdt.domainLayer.CarVirtualPosition
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CarsMqttDigitalAdapter
-import org.example.com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter
-import org.example.com.smartassistantdrive.trafficdt.utils.UtilsFunctions
+import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
+import com.smartassistantdrive.trafficdt.domainLayer.Car
+import com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
+import com.smartassistantdrive.trafficdt.domainLayer.CarVirtualPosition
+import com.smartassistantdrive.trafficdt.utils.UtilsFunctions
 
 /*TODO refactor shadowing using this class*/
 class TrafficManagerUseCase(val trafficDtInfo: TrafficDtInfo) {

@@ -14,18 +14,18 @@ class Main {
             val listRoads = YamlRoadReader().readYamlFile("src/main/resources/configuration.yml")
             val digitalTwinEngine = DigitalTwinEngine()
             digitalTwinEngine.addDigitalTwin(AggregateTrafficDt("aggregate-traffic", digitalTwinEngine).getDigitalTwin(), true)
-            listRoads.forEachIndexed { index, road ->
-                println("Creo DT per ${road.roadId}")
-                digitalTwinEngine.addDigitalTwin(
-                    TrafficDT(
-                        "trafficdt-$index",
-                        index,
-                        road.roadId,
-                        road.direction,
-                        road.numLanes,
-                        road.numBlocks
-                    ).getDigitalTwin(), true)
-            }
+//            listRoads.forEachIndexed { index, road ->
+//                println("Creo DT per ${road.roadId}")
+//                digitalTwinEngine.addDigitalTwin(
+//                    TrafficDT(
+//                        "trafficdt-$index",
+//                        index,
+//                        road.roadId,
+//                        road.direction,
+//                        road.numLanes,
+//                        road.numBlocks
+//                    ).getDigitalTwin(), true)
+//            }
 
             // Start all the DTs registered on the engine
             //digitalTwinEngine.startAll()

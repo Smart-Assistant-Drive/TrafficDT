@@ -89,12 +89,13 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 
 		builder.addPhysicalAssetEventAndTopic(CAR_ENTERED_ON_ROAD, "text/plain", "$baseTopic/$CAR_ENTERED_ON_ROAD") {
 			// info of car needed
-			val json = stringToJsonObjectGson(it)
-			if(json != null) {
-				UtilsFunctions.jsonToCarUpdateModel(json)
-			} else {
-				throw IllegalArgumentException()
-			}
+            println("CAR ENTERED")
+            try {
+                val json = stringToJsonObjectGson(it)
+                UtilsFunctions.jsonToCarUpdateModel(json!!)
+            } catch (e: Exception) {
+                println(e.message)
+            }
 		}
 
 		builder.addPhysicalAssetEventAndTopic(CAR_UPDATE, "text/plain", "$baseTopic/$CAR_UPDATE") {

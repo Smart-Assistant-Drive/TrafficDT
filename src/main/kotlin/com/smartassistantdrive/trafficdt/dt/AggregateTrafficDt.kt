@@ -34,7 +34,7 @@ class AggregateTrafficDt(idDT: String, dtEngine: DigitalTwinEngine) {
             "custom-http-da-$idDT",
             EndPointConfiguration(
                 host.getEnvValue(),
-                5102//digitalAggregatePort.getEnvValue().toInt()
+                digitalAggregatePort.getEnvValue().toInt()
             ),
             shadowing::getTrafficDigitalTwinByRoadId,
             shadowing::getAllRegisteredTrafficManagers

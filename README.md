@@ -1,6 +1,19 @@
 # TrafficDT
 This represents the environment for traffic digital twins.
 
+# Create new Traffic DT via Administration Gateway
+Make a POST request to the following url: /traffic.
+The body should be a JSON described as follows:
+```json
+{
+  "roadId": "",
+  "direction": "",
+  "numLanes": "",
+  "numBlocks": ""
+}
+```
+NOTE: leave the link empty.
+
 # Topics for Traffic Physical Adapter Communication
 ## Properties
 ### Road start point (x,y) coordinates
@@ -30,15 +43,6 @@ Topic: trafficdt-physical-%idDT%/direction \
 Value type: Int
 
 ## Events
-### Change lane request
-Topic: trafficdt-physical-%idDT%/changeLaneRequest
-```json
-{
-  "id": "idCar - String",
-  "destinationLane": "destinationLane - Int"
-}
-```
-
 ### Car update
 Topic: trafficdt-physical-%idDT%/carUpdate
 ```json
@@ -75,14 +79,9 @@ Topic: trafficdt-physical-%idDT%/carEntered
 Topic: trafficdt-physical-%idDT%/carExited
 Value type: String (carId)
 
-## Actions
-### Change lane action
-Topic: trafficdt-physical-%idDT%/changeLaneAction
-Body:
-```json
-{
-  "idCar": "",
-  "lane": "",
-  "canChange": ""
-}
+# Next car distance
+In order to know the next car distance from a specific car you should connect to the following topic:
 ```
+trafficdt-digital-$idTrafficDt/cars/$idCar/distanceFromNext
+```
+The digital twin sends this update every 1 second.

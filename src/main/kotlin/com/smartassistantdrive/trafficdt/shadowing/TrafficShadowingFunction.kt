@@ -30,6 +30,7 @@ import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.calculat
 import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.getCurrentTimestamp
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 
 
 class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : AbstractShadowing(id) {
@@ -79,12 +80,13 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 				lanes[c].add(ArrayList())
 			}
 		}
-//		executorService.scheduleAtFixedRate(task, 0,  1, TimeUnit.SECONDS)
+
+		executorService.scheduleAtFixedRate(task, 0,  1, TimeUnit.SECONDS)
 
 		// TODO remove this test code
-		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-			DigitalTwinStateEventNotification<TrafficDtInfo>(DIGITALTWIN_STARTED, trafficDtInfo, getCurrentTimestamp())
-		)
+//		this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+//			DigitalTwinStateEventNotification<TrafficDtInfo>(DIGITALTWIN_STARTED, trafficDtInfo, getCurrentTimestamp())
+//		)
 	}
 
 	override fun onDigitalTwinUnBound(p0: MutableMap<String, PhysicalAssetDescription>?, p1: String?) {
@@ -185,6 +187,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 								carUpdate.dPoint
 							)
 						)
+                        println(this.lanes[carUpdate.indexP][carUpdate.indexLane])
 					}
 				}
 
@@ -212,12 +215,14 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 	}
 
 	fun updateCarsDistances() {
+        println("NOTIFY DISTANCE SIZE: ${lanes.size}")
 		this.lanes.forEach { blocks ->
 			blocks.forEach {
 				for (i in 0..<(it.size - 1)) {
 					val car1 = it[i]
 					val car2 = it[i + 1]
 					val distance = calculateDistance(car1.position, car2.position)
+                    println("NOTIFY DISTANCE: $distance")
 					this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
 						DigitalTwinStateEventNotification(
 							CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
