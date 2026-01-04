@@ -24,7 +24,6 @@ import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.C
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter.Companion.CHANGE_LANE_DIGITAL_ACTION
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_SHUTDOWN
-import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_STARTED
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.SECURITY_DISTANCE
 import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.calculateDistance
 import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.getCurrentTimestamp
@@ -74,7 +73,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 		super.onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap)
 
 		// initialize the lanes arrays
-		for(c in 0..trafficDtInfo.numBlocks) {
+		for(c in 0..<trafficDtInfo.numBlocks) {
 			lanes.add(ArrayList())
 			for(i in 0..<trafficDtInfo.numLanes) {
 				lanes[c].add(ArrayList())

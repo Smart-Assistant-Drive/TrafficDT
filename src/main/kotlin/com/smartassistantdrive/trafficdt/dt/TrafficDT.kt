@@ -24,9 +24,9 @@ class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numL
 		val host = EnvironmentVariable(BASE_HOST, "127.0.0.1")
 		val mqttHost = EnvironmentVariable(MQTT_BROKER_HOST, "127.0.0.1")
 		val httpDTPort = httpPort.getEnvValue().toInt() + idIndex
-		val id = "semaphore-dt-$idDT"
-		val shadowing = TrafficShadowingFunction("traffic-shadowing-$idDT", TrafficDtInfo("${host.getEnvValue()}:$httpDTPort", roadId, direction, numLanes, numBlocks))
-		digitalTwin = DigitalTwin(id, shadowing)
+
+		val shadowing = TrafficShadowingFunction("$idDT-shaddowing", TrafficDtInfo("${host.getEnvValue()}:$httpDTPort", roadId, direction, numLanes, numBlocks))
+		digitalTwin = DigitalTwin(idDT, shadowing)
 
 		val mqttPhysicalAdapter = MqttTrafficPhysicalAdapter(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), idDT, TrafficInitialProperties(roadId, direction)).build("test-mqtt-pa-$idDT")
 

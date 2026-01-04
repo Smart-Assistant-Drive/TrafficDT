@@ -1,5 +1,9 @@
 # TrafficDT
 This represents the environment for traffic digital twins.
+The idDT keyword in the following topics should be composed like that:
+```
+trafficdt-%roadId%-%direction%
+```
 
 # Create new Traffic DT via Administration Gateway
 Make a POST request to the following url: /traffic.
@@ -82,6 +86,15 @@ Value type: String (carId)
 # Next car distance
 In order to know the next car distance from a specific car you should connect to the following topic:
 ```
-trafficdt-digital-$idTrafficDt/cars/$idCar/distanceFromNext
+trafficdt-digital-cars-digital-adapter/cars/$idCar/distanceFromNext
+```
+You should get the following JSON:
+```json
+{
+  "idCar": "car2",
+  "idNextCar": "car3",
+  "distance": 8.485281944274902,
+  "speed": 5
+}
 ```
 The digital twin sends this update every 1 second.
