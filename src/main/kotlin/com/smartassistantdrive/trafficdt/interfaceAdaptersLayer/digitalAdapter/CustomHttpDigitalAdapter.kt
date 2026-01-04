@@ -23,7 +23,6 @@ class CustomHttpDigitalAdapter(id: String, configuration: EndPointConfiguration,
 	}
 
 	override fun onAdapterStart() {
-        println("SI CAPO")
 		TrafficRouting.execute(this)
 	}
 

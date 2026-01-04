@@ -12,6 +12,9 @@ import com.smartassistantdrive.trafficdt.businessLayer.TrafficDtInfo
 import com.smartassistantdrive.trafficdt.dt.TrafficDT
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter.Companion.CREATE_TRAFFIC_DT
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.BASE_HOST
+import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.httpPort
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -100,8 +103,12 @@ class AggregateTrafficShadowingFunction(id: String?, private val dtEngine: Digit
                 when (digitalActionWldtEvent.actionKey) {
                     CREATE_TRAFFIC_DT -> {
                         val trafficDtInfo = MqttAggregatePhysicalAdapter.getTrafficInfo(body)
+                        val baseTrafficHost = EnvironmentVariable(BASE_HOST, "127.0.0.1")
+                        val idIndex = trafficDigitalTwinsActive.size - 1
+                        val httpDTPort = httpPort.getEnvValue().toInt() + idIndex
+                        trafficDtInfo.link = "${baseTrafficHost.getEnvValue()}:$httpDTPort"
                         this.trafficDigitalTwinsActive.add(trafficDtInfo)
-                        this.createNewSemaphore(trafficDtInfo)
+                        this.createNewSemaphore(trafficDtInfo, idIndex)
                         logger.info("Created new dt... $trafficDigitalTwinsActive")
                     }
                 }
@@ -113,8 +120,8 @@ class AggregateTrafficShadowingFunction(id: String?, private val dtEngine: Digit
         }
 	}
 
-    private fun createNewSemaphore(trafficDtInfo: TrafficDtInfo) {
-        this.dtEngine.addDigitalTwin(TrafficDT("trafficdt-${trafficDtInfo.roadId}-${trafficDtInfo.direction}", trafficDigitalTwinsActive.size - 1, trafficDtInfo.roadId, trafficDtInfo.direction, trafficDtInfo.numLanes, trafficDtInfo.numBlocks).getDigitalTwin(), true)
+    private fun createNewSemaphore(trafficDtInfo: TrafficDtInfo, idIndex: Int) {
+        this.dtEngine.addDigitalTwin(TrafficDT("trafficdt-${trafficDtInfo.roadId}-${trafficDtInfo.direction}", idIndex, trafficDtInfo.roadId, trafficDtInfo.direction, trafficDtInfo.numLanes, trafficDtInfo.numBlocks).getDigitalTwin(), true)
     }
 
 }
