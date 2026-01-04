@@ -35,6 +35,7 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 		val FIRST_CAR_RESTART = "firstCarRestart"
 		val STOP_REQUEST_FOR_SEMAPHORE = "stopRequestForSemaphore"
 		val CAR_ENTERED_ON_ROAD = "carEntered"
+		val CAR_ENTERED_ON_ROAD_ACTION = "carEnteredAction"
 		val CAR_EXITED_ON_ROAD = "carExited"
 		val CAR_UPDATE = "carUpdate"
 
@@ -121,6 +122,10 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 		builder.addPhysicalAssetActionAndTopic<ChangeLaneAction>(CHANGE_LANE_ACTION, "car.changeLane", "text/plain", "$baseTopic/$CHANGE_LANE_ACTION") {
             it.toJson().toString()
 		}
+
+        builder.addPhysicalAssetActionAndTopic<ChangeLaneAction>(CAR_ENTERED_ON_ROAD_ACTION, "car.carEntered", "text/plain", "$baseTopic/$CAR_ENTERED_ON_ROAD_ACTION") {
+            it.toJson().toString()
+        }
 	}
 
 	fun build(id: String): MqttPhysicalAdapter {

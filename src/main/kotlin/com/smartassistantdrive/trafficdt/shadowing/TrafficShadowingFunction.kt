@@ -22,12 +22,16 @@ import com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
 import com.smartassistantdrive.trafficdt.domainLayer.CarVirtualPosition
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.CarsMqttDigitalAdapter
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter.Companion.CHANGE_LANE_DIGITAL_ACTION
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter.Companion.CREATE_TRAFFIC_DT
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_ENTERED_ON_ROAD_ACTION
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_SHUTDOWN
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_STARTED
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.SECURITY_DISTANCE
+import com.smartassistantdrive.trafficdt.utils.UtilsFunctions
 import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.calculateDistance
 import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.getCurrentTimestamp
+import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.stringToJsonObjectGson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -210,8 +214,30 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 
 	}
 
-	override fun onDigitalActionEvent(p0: DigitalActionWldtEvent<*>?) {
-
+	override fun onDigitalActionEvent(digitalActionWldtEvent: DigitalActionWldtEvent<*>?) {
+        try {
+            if (digitalActionWldtEvent != null) {
+                logger.info("Actions triggered... " + digitalActionWldtEvent.actionKey)
+                logger.info("Body... " + digitalActionWldtEvent.body)
+                val body = digitalActionWldtEvent.body as String
+                when (digitalActionWldtEvent.actionKey) {
+                    CAR_ENTERED_ON_ROAD_ACTION -> {
+                        println("CAR ENTERED")
+                        try {
+                            val json = stringToJsonObjectGson(body)
+                            val carUpdate = UtilsFunctions.jsonToCarUpdateModel(json!!)
+                            this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_UPDATE, carUpdate, getCurrentTimestamp()))
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+                    }
+                }
+            } else {
+                throw NullPointerException("Digital Action Wldt Event received is null")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 	}
 
 	fun updateCarsDistances() {

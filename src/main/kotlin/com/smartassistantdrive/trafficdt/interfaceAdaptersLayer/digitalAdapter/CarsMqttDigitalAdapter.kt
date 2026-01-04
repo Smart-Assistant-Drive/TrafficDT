@@ -14,8 +14,10 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
+import com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_UPDATE
 
 /**
  * Class that represents a MQTT Adapter for specific traffic dt -> car communication
@@ -75,6 +77,10 @@ class CarsMqttDigitalAdapter(id: String, mqttConfiguration: EndPointConfiguratio
 					val body: DistanceFromNext = eventNotification.body as DistanceFromNext
 					this.publishUpdate("$baseTopic/cars/${body.idCar}/$DISTANCE_FROM_NEXT", body.toJson().toString())
 				}
+                CAR_UPDATE -> {
+                    val body: CarUpdate = eventNotification.body as CarUpdate
+                    this.publishUpdate("$baseTopic/cars/$CAR_UPDATE", body.toJson().toString())
+                }
 			}
 		}
 	}
