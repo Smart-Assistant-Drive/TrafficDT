@@ -103,13 +103,18 @@ The digital twin sends this update every 1 second.
 ## Update car
 This update message is emitted via MQTT topic when a car is modified. The topic is the following:
 ```
-trafficdt-digital-cars-digital-adapter/cars/distanceFromNext
+trafficdt-digital-cars-digital-adapter/cars/carUpdate
 ```
 ```json
 {
-  "idCar": "car2",
-  "idNextCar": "car3",
-  "distance": 8.485281944274902,
-  "speed": 5
+  "idCar": "",
+  "currentSpeed": "",
+  "state": "",
+  "lane": "",
+  "positionX": "",
+  "positionY": "",
+  "indexP": "",
+  "dPointX": "",
+  "dPointY": ""
 }
 ```
