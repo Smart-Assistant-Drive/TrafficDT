@@ -9,6 +9,7 @@ import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.C
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.MqttTrafficDigitalAdapter
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.baseTopicPrefix
 import com.smartassistantdrive.trafficdt.shadowing.TrafficShadowingFunction
 import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable
 import com.smartassistantdrive.trafficdt.utils.EnvironmentVariable.Companion.BASE_HOST
@@ -33,7 +34,7 @@ class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numL
 		val httpDigitalAdapterConfiguration = HttpDigitalAdapterConfiguration("my-http-adapter-$idDT", host.getEnvValue(), httpDTPort)
 		val httpDigitalAdapter = HttpDigitalAdapter(httpDigitalAdapterConfiguration, digitalTwin)
 
-		val carsDigitalAdapter = CarsMqttDigitalAdapter("cars-digital-adapter", EndPointConfiguration(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt()))
+		val carsDigitalAdapter = CarsMqttDigitalAdapter("cars-digital-adapter", EndPointConfiguration(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), "$baseTopicPrefix-$idDT"))
 
 		val mqttDigitalAdapter = MqttTrafficDigitalAdapter(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), idDT).build("test-mqtt-da-$idDT")
 

@@ -24,7 +24,7 @@ class UtilsFunctions {
 		fun jsonToCarUpdateModel(json: JsonObject): CarUpdate {
 			val idCar = json["idCar"].asString
 			val speed = json["currentSpeed"].asFloat
-			val state = json["state"].asString
+            val state = json["state"].asString
 			val lane = json["lane"].asInt
 			val positionX = json["positionX"].asFloat
 			val positionY = json["positionY"].asFloat

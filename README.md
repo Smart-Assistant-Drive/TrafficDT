@@ -83,10 +83,11 @@ Topic: trafficdt-physical-%idDT%/carEntered
 Topic: trafficdt-physical-%idDT%/carExited
 Value type: String (carId)
 
-# Next car distance
+# Events emitted
+## Next car distance
 In order to know the next car distance from a specific car you should connect to the following topic:
 ```
-trafficdt-digital-cars-digital-adapter/cars/$idCar/distanceFromNext
+trafficdt-digital-cars-digital-adapter/cars/%idCar%/distanceFromNext
 ```
 You should get the following JSON:
 ```json
@@ -98,3 +99,17 @@ You should get the following JSON:
 }
 ```
 The digital twin sends this update every 1 second.
+
+## Update car
+This update message is emitted via MQTT topic when a car is modified. The topic is the following:
+```
+trafficdt-digital-cars-digital-adapter/cars/distanceFromNext
+```
+```json
+{
+  "idCar": "car2",
+  "idNextCar": "car3",
+  "distance": 8.485281944274902,
+  "speed": 5
+}
+```

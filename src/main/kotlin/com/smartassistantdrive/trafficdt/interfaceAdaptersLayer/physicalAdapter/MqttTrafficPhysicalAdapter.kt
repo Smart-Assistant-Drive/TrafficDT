@@ -13,9 +13,12 @@ import com.smartassistantdrive.trafficdt.utils.UtilsFunctions.Companion.stringTo
 
 class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficInitialProperties: TrafficInitialProperties) {
 	val builder = MqttPhysicalAdapterConfiguration.builder(host, port)
-	val baseTopic = "trafficdt-physical-$idDT"
+
+	val baseTopic = "$baseTopicPrefix-$idDT"
 
 	companion object {
+        val baseTopicPrefix = "trafficdt-physical"
+
 		/* MACRO VALUES */
 		val SECURITY_DISTANCE_VALUE: Double = 10.0
 
@@ -90,7 +93,8 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 
 		builder.addPhysicalAssetEventAndTopic(CAR_ENTERED_ON_ROAD, "text/plain", "$baseTopic/$CAR_ENTERED_ON_ROAD") {
 			// info of car needed
-            println("CAR ENTERED")
+            println("CAR ENTERED EVENT")
+            println(it)
             try {
                 val json = stringToJsonObjectGson(it)
                 UtilsFunctions.jsonToCarUpdateModel(json!!)

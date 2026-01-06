@@ -17,6 +17,7 @@ import com.smartassistantdrive.trafficdt.businessLayer.DistanceFromNext
 import com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_ENTERED_ON_ROAD
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_UPDATE
 
 /**
@@ -78,8 +79,16 @@ class CarsMqttDigitalAdapter(id: String, mqttConfiguration: EndPointConfiguratio
 					this.publishUpdate("$baseTopic/cars/${body.idCar}/$DISTANCE_FROM_NEXT", body.toJson().toString())
 				}
                 CAR_UPDATE -> {
+                    try {
+                        val body: CarUpdate = eventNotification.body as CarUpdate
+                        this.publishUpdate("$baseTopic/cars/$CAR_UPDATE", body.toJson().toString())
+                    } catch (me: MqttException) {
+                        println("reason " + me.reasonCode)
+                    }
+                }
+                CAR_ENTERED_ON_ROAD -> {
                     val body: CarUpdate = eventNotification.body as CarUpdate
-                    this.publishUpdate("$baseTopic/cars/$CAR_UPDATE", body.toJson().toString())
+                    this.publishUpdate("${configuration.physicalBaseTopic}/$CAR_ENTERED_ON_ROAD", body.toJson().toString())
                 }
 			}
 		}

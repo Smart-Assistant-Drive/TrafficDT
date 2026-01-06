@@ -78,9 +78,9 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 		super.onDigitalTwinBound(adaptersPhysicalAssetDescriptionMap)
 
 		// initialize the lanes arrays
-		for(c in 0..<trafficDtInfo.numBlocks) {
+		for(c in 0..trafficDtInfo.numBlocks) {
 			lanes.add(ArrayList())
-			for(i in 0..<trafficDtInfo.numLanes) {
+			for(i in 0..trafficDtInfo.numLanes) {
 				lanes[c].add(ArrayList())
 			}
 		}
@@ -164,35 +164,51 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 
 				MqttTrafficPhysicalAdapter.CAR_UPDATE -> {
 					// update the car state
-					val carUpdate: CarUpdate = physicalAssetEventWldtEvent.body as CarUpdate
-					if(this.accessMap.containsKey(carUpdate.idCar)) {
-						// update the car
-						updateCar(carUpdate)
-					}
+                    try {
+                        val carUpdate: CarUpdate = physicalAssetEventWldtEvent.body as CarUpdate
+                        if(this.accessMap.containsKey(carUpdate.idCar)) {
+                            // update the car
+                            logger.info("UPDATE CAR...")
+                            updateCar(carUpdate)
+                            this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_UPDATE, carUpdate, getCurrentTimestamp()))
+                        }
+                    } catch (e:Exception){
+                        logger.error("ERROR UPDATING CAR: ${e.message}")
+                    }
+
 				}
 
 				MqttTrafficPhysicalAdapter.CAR_ENTERED_ON_ROAD -> {
 					// manage car added on road using lanes
-					val carUpdate: CarUpdate = physicalAssetEventWldtEvent.body as CarUpdate
+                    try {
+					    val carUpdate: CarUpdate = physicalAssetEventWldtEvent.body as CarUpdate
 
-					if(!this.accessMap.containsKey(carUpdate.idCar)) {
-						// update the car
-						val indexPositionInLane = this.lanes[carUpdate.indexP][carUpdate.indexLane].size
-						this.accessMap[carUpdate.idCar] = CarVirtualPosition(indexPositionInLane, carUpdate.indexLane, carUpdate.indexP)
-						this.lanes[carUpdate.indexP][carUpdate.indexLane].add(
-							Car(
-								carUpdate.idCar,
-								carUpdate.state,
-								"",
-								carUpdate.currentSpeed,
-								carUpdate.position,
-								carUpdate.indexP,
-								carUpdate.indexLane,
-								carUpdate.dPoint
-							)
-						)
-                        println(this.lanes[carUpdate.indexP][carUpdate.indexLane])
-					}
+                        if(!this.accessMap.containsKey(carUpdate.idCar)) {
+                            // update the car
+                            println("ADDING CAR...")
+
+                            val indexPositionInLane = this.lanes[carUpdate.indexP][carUpdate.indexLane].size
+                            this.accessMap[carUpdate.idCar] = CarVirtualPosition(indexPositionInLane, carUpdate.indexLane, carUpdate.indexP)
+                            this.lanes[carUpdate.indexP][carUpdate.indexLane].add(
+                                Car(
+                                    carUpdate.idCar,
+                                    carUpdate.state,
+                                    "",
+                                    carUpdate.currentSpeed,
+                                    carUpdate.position,
+                                    carUpdate.indexP,
+                                    carUpdate.indexLane,
+                                    carUpdate.dPoint
+                                )
+                            )
+                            //this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_UPDATE, carUpdate, getCurrentTimestamp()))
+                            println("CAR ADDED: " + this.lanes[carUpdate.indexP][carUpdate.indexLane])
+                        } else {
+                            logger.info("CAR ALREADY PRESENT...")
+                        }
+                    } catch (e: Exception) {
+                        logger.error("ERROR ADDING CAR: ${e.message}")
+                    }
 				}
 
 				MqttTrafficPhysicalAdapter.CAR_EXITED_ON_ROAD -> {
@@ -226,7 +242,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
                         try {
                             val json = stringToJsonObjectGson(body)
                             val carUpdate = UtilsFunctions.jsonToCarUpdateModel(json!!)
-                            this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_UPDATE, carUpdate, getCurrentTimestamp()))
+                            this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_ENTERED_ON_ROAD, carUpdate, getCurrentTimestamp()))
                         } catch (e: Exception) {
                             println(e.message)
                         }
@@ -242,23 +258,27 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 
 	fun updateCarsDistances() {
         println("NOTIFY DISTANCE SIZE: ${lanes.size}")
-		this.lanes.forEach { blocks ->
-			blocks.forEach {
-				for (i in 0..<(it.size - 1)) {
-					val car1 = it[i]
-					val car2 = it[i + 1]
-					val distance = calculateDistance(car1.position, car2.position)
-                    println("NOTIFY DISTANCE: $distance")
-					this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
-						DigitalTwinStateEventNotification(
-							CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
-							DistanceFromNext(car1.id, car2.id, distance.toDouble(), car2.speed.toDouble()),
-							getCurrentTimestamp()
-						)
-					)
-				}
-			}
-		}
+        try {
+            this.lanes.forEach { blocks ->
+                blocks.forEach {
+                    for (i in 0..<(it.size - 1)) {
+                        val car1 = it[i]
+                        val car2 = it[i + 1]
+                        val distance = calculateDistance(car1.position, car2.position)
+                        println("NOTIFY DISTANCE: $distance")
+                        this.digitalTwinStateManager.notifyDigitalTwinStateEvent(
+                            DigitalTwinStateEventNotification(
+                                CarsMqttDigitalAdapter.DISTANCE_FROM_NEXT,
+                                DistanceFromNext(car1.id, car2.id, distance.toDouble(), car2.speed.toDouble()),
+                                getCurrentTimestamp()
+                            )
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            logger.error("ERROR UPDATE DISTANCES: ${e.message}")
+        }
 	}
 
 	fun getCar(carId: String): Optional<Car> {
