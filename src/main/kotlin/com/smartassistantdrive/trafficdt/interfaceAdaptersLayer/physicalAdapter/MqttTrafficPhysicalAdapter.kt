@@ -40,6 +40,7 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 		val CAR_ENTERED_ON_ROAD = "carEntered"
 		val CAR_ENTERED_ON_ROAD_ACTION = "carEnteredAction"
 		val CAR_EXITED_ON_ROAD = "carExited"
+		val CAR_EXITED_ON_ROAD_ACTION = "carExitedAction"
 		val CAR_UPDATE = "carUpdate"
 
 		/* ACTIONS */
@@ -128,6 +129,10 @@ class MqttTrafficPhysicalAdapter(host: String, port: Int, idDT: String, trafficI
 		}
 
         builder.addPhysicalAssetActionAndTopic<ChangeLaneAction>(CAR_ENTERED_ON_ROAD_ACTION, "car.carEntered", "text/plain", "$baseTopic/$CAR_ENTERED_ON_ROAD_ACTION") {
+            it.toJson().toString()
+        }
+
+        builder.addPhysicalAssetActionAndTopic<ChangeLaneAction>(CAR_EXITED_ON_ROAD_ACTION, "car.carExited", "text/plain", "$baseTopic/$CAR_EXITED_ON_ROAD_ACTION") {
             it.toJson().toString()
         }
 	}

@@ -25,6 +25,7 @@ import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.M
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttAggregatePhysicalAdapter.Companion.CREATE_TRAFFIC_DT
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_ENTERED_ON_ROAD_ACTION
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_EXITED_ON_ROAD_ACTION
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_SHUTDOWN
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.DIGITALTWIN_STARTED
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.SECURITY_DISTANCE
@@ -215,7 +216,9 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 					val carId: String = physicalAssetEventWldtEvent.body as String
 					if(this.accessMap.containsKey(carId)) {
 						val carVirtualPosition: CarVirtualPosition = this.accessMap[carId]!!
+                        logger.info("CAR TO REMOVE: ${this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane]}")
 						this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane].removeAt(carVirtualPosition.indexPosition)
+                        logger.info("CAR REMOVED: ${this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane]}")
 					}
 				}
 			}
@@ -243,6 +246,15 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
                             val json = stringToJsonObjectGson(body)
                             val carUpdate = UtilsFunctions.jsonToCarUpdateModel(json!!)
                             this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_ENTERED_ON_ROAD, carUpdate, getCurrentTimestamp()))
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+                    }
+                    CAR_EXITED_ON_ROAD_ACTION -> {
+                        println("CAR EXITED")
+                        try {
+                            val carId: String = body
+                            this.digitalTwinStateManager.notifyDigitalTwinStateEvent(DigitalTwinStateEventNotification(MqttTrafficPhysicalAdapter.CAR_EXITED_ON_ROAD, carId, getCurrentTimestamp()))
                         } catch (e: Exception) {
                             println(e.message)
                         }

@@ -18,6 +18,7 @@ import com.smartassistantdrive.trafficdt.domainLayer.CarUpdate
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.conversion.toJson
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.digitalAdapter.configuration.EndPointConfiguration
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_ENTERED_ON_ROAD
+import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_EXITED_ON_ROAD
 import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.MqttTrafficPhysicalAdapter.Companion.CAR_UPDATE
 
 /**
@@ -89,6 +90,10 @@ class CarsMqttDigitalAdapter(id: String, mqttConfiguration: EndPointConfiguratio
                 CAR_ENTERED_ON_ROAD -> {
                     val body: CarUpdate = eventNotification.body as CarUpdate
                     this.publishUpdate("${configuration.physicalBaseTopic}/$CAR_ENTERED_ON_ROAD", body.toJson().toString())
+                }
+                CAR_EXITED_ON_ROAD -> {
+                    val body: String = eventNotification.body as String
+                    this.publishUpdate("${configuration.physicalBaseTopic}/$CAR_EXITED_ON_ROAD", body)
                 }
 			}
 		}
