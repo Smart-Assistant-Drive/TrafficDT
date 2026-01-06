@@ -16,7 +16,26 @@ The body should be a JSON described as follows:
   "numBlocks": ""
 }
 ```
-NOTE: leave the link empty.
+
+# Add new car from action via HTTP directly from the Traffic DT
+Make a POST request to the following url:
+```
+http://localhost:%port%/state/actions/carEnteredAction
+```
+The body should be a JSON described as follows:
+```json
+{
+  "idCar": "car10",
+  "currentSpeed": "5",
+  "state": "RUNNING",
+  "lane": "0",
+  "positionX": "11.1",
+  "positionY": "11.1",
+  "indexP": "0",
+  "dPointX": "0.0",
+  "dPointY": "0.0"
+}
+```
 
 # Topics for Traffic Physical Adapter Communication
 ## Properties
@@ -117,4 +136,17 @@ trafficdt-digital-cars-digital-adapter/cars/carUpdate
   "dPointX": "",
   "dPointY": ""
 }
+```
+
+# Traffic DT get requests
+If you need to obtain information about actual running Traffic DTs you can use the aggregate DT microservice adapter.
+## Get all the traffic DTs
+Make a GET request to the following url.
+```
+http://localhost:%port%/getAllTrafficManagers
+```
+## Filter Traffic DTs
+Make a GET request to the following url.
+```
+http://localhost:8091/getByRoadId?roadId=A1&direction=1
 ```
