@@ -104,7 +104,7 @@ class AggregateTrafficShadowingFunction(id: String?, private val dtEngine: Digit
                     CREATE_TRAFFIC_DT -> {
                         val trafficDtInfo = MqttAggregatePhysicalAdapter.getTrafficInfo(body)
                         val baseTrafficHost = EnvironmentVariable(BASE_HOST, "127.0.0.1")
-                        val idIndex = trafficDigitalTwinsActive.size - 1
+                        val idIndex = trafficDigitalTwinsActive.size
                         val httpDTPort = httpPort.getEnvValue().toInt() + idIndex
                         trafficDtInfo.link = "${baseTrafficHost.getEnvValue()}:$httpDTPort"
                         this.trafficDigitalTwinsActive.add(trafficDtInfo)
