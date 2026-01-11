@@ -106,9 +106,11 @@ class AggregateTrafficShadowingFunction(id: String?, private val dtEngine: Digit
                         val baseTrafficHost = EnvironmentVariable(BASE_HOST, "127.0.0.1")
                         val idIndex = trafficDigitalTwinsActive.size
                         val httpDTPort = httpPort.getEnvValue().toInt() + idIndex
+                        val idDt = "trafficdt-${trafficDtInfo.roadId}-${trafficDtInfo.direction}"
                         trafficDtInfo.link = "${baseTrafficHost.getEnvValue()}:$httpDTPort"
+                        trafficDtInfo.idDt = idDt
                         this.trafficDigitalTwinsActive.add(trafficDtInfo)
-                        this.createNewSemaphore(trafficDtInfo, idIndex)
+                        this.createNewTrafficDt(trafficDtInfo, idIndex, idDt)
                         logger.info("Created new dt... $trafficDigitalTwinsActive")
                     }
                 }
@@ -120,8 +122,8 @@ class AggregateTrafficShadowingFunction(id: String?, private val dtEngine: Digit
         }
 	}
 
-    private fun createNewSemaphore(trafficDtInfo: TrafficDtInfo, idIndex: Int) {
-        this.dtEngine.addDigitalTwin(TrafficDT("trafficdt-${trafficDtInfo.roadId}-${trafficDtInfo.direction}", idIndex, trafficDtInfo.roadId, trafficDtInfo.direction, trafficDtInfo.numLanes, trafficDtInfo.numBlocks).getDigitalTwin(), true)
+    private fun createNewTrafficDt(trafficDtInfo: TrafficDtInfo, idIndex: Int, idDt: String) {
+        this.dtEngine.addDigitalTwin(TrafficDT(idDt, idIndex, trafficDtInfo.roadId, trafficDtInfo.direction, trafficDtInfo.numLanes, trafficDtInfo.numBlocks).getDigitalTwin(), true)
     }
 
 }

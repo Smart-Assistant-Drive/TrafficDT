@@ -26,7 +26,7 @@ class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numL
 		val mqttHost = EnvironmentVariable(MQTT_BROKER_HOST, "127.0.0.1")
 		val httpDTPort = httpPort.getEnvValue().toInt() + idIndex
 
-		val shadowing = TrafficShadowingFunction("$idDT-shaddowing", TrafficDtInfo("${host.getEnvValue()}:$httpDTPort", roadId, direction, numLanes, numBlocks))
+		val shadowing = TrafficShadowingFunction("$idDT-shaddowing", TrafficDtInfo("${host.getEnvValue()}:$httpDTPort", roadId, direction, numLanes, numBlocks, idDT))
 		digitalTwin = DigitalTwin(idDT, shadowing)
 
 		val mqttPhysicalAdapter = MqttTrafficPhysicalAdapter(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), idDT, TrafficInitialProperties(roadId, direction)).build("test-mqtt-pa-$idDT")
@@ -34,7 +34,7 @@ class TrafficDT(idDT: String, idIndex: Int, roadId: String, direction: Int, numL
 		val httpDigitalAdapterConfiguration = HttpDigitalAdapterConfiguration("my-http-adapter-$idDT", host.getEnvValue(), httpDTPort)
 		val httpDigitalAdapter = HttpDigitalAdapter(httpDigitalAdapterConfiguration, digitalTwin)
 
-		val carsDigitalAdapter = CarsMqttDigitalAdapter("cars-digital-adapter", EndPointConfiguration(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), "$baseTopicPrefix-$idDT"))
+		val carsDigitalAdapter = CarsMqttDigitalAdapter("cars-$idDT", EndPointConfiguration(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), "$baseTopicPrefix-$idDT"))
 
 		val mqttDigitalAdapter = MqttTrafficDigitalAdapter(mqttHost.getEnvValue(), mqttPort.getEnvValue().toInt(), idDT).build("test-mqtt-da-$idDT")
 

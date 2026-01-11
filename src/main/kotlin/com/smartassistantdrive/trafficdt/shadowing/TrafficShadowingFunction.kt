@@ -219,6 +219,7 @@ class TrafficShadowingFunction(id: String?, val trafficDtInfo: TrafficDtInfo) : 
 						val carVirtualPosition: CarVirtualPosition = this.accessMap[carId]!!
                         logger.info("CAR TO REMOVE: ${this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane]}")
 						this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane].removeAt(carVirtualPosition.indexPosition)
+                        this.accessMap.remove(carId)
                         logger.info("CAR REMOVED: ${this.lanes[carVirtualPosition.indexBlock][carVirtualPosition.indexLane]}")
 					}
 				}

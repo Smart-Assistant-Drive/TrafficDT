@@ -66,7 +66,8 @@ class UtilsFunctions {
 				json["roadId"].asString,
 				json["direction"].asInt,
 				json["numLanes"].asInt,
-				json["numBlocks"].asInt
+				json["numBlocks"].asInt,
+                ""
 			)
 		}
 	}
