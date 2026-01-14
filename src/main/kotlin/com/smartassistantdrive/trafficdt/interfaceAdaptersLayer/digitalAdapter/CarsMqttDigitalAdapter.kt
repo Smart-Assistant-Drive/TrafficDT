@@ -26,7 +26,7 @@ import com.smartassistantdrive.trafficdt.interfaceAdaptersLayer.physicalAdapter.
  */
 class CarsMqttDigitalAdapter(id: String, mqttConfiguration: EndPointConfiguration): DigitalAdapter<EndPointConfiguration>(id, mqttConfiguration) {
 
-	val baseTopic = "trafficdt-digital-$id"
+	val baseTopic = "trafficdt-digital-cars/$id"
 
 	companion object {
 		val DISTANCE_FROM_NEXT = "distanceFromNext"
